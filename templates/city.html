@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>What's the weather like?</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.css" />
+    <style type="text/css">
+        .column-left{ float: left; width: 20%; }
+        .column-right{ float: right; width: 30%; }
+        .column-center{ display: inline-block; width: 50%; }
+    </style>
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-offset-4 is-4">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="field has-addons">
+                            <div class="control is-expanded">
+                                {{ form.name }}
+                            </div>
+                            <div class="control">
+                                <button class="button is-info" name="Add">
+                                        Добавить город
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <span class="subtitle column is-offset-2 is-4"><b>Прогноз на 5 дней</b></span>
+    <div class="columns">
+        <div class="column is-offset-0 is-6">
+            <div class="box">
+                {% for day in weather_week %}
+                    <div class="box" style="margin-top: -15px">
+                        <div class="media-content">
+                            <div class="row">
+                                <span class="subtitle column-left"> {{ day.dt }}</span>
+                                <img class="column-center" src="{% static "images/term.png" %}" style="width:20px;height:20px;margin-left: 100px;">
+                                <span class="subtitle">{{ day.day_temperature }}/{{ day.night_temperature }}° C</span>
+                                <span class="subtitle column-right">{{ day.description }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="column is-offset-0 is-3">
+            <div class="box">
+                <article class="media">
+                    <div class="media-left">
+                        <figure class="image is-50x50">
+                            <img src="http://openweathermap.org/img/w/{{ main_city.icon }}.png" alt="Image">
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <div class="content">
+                            <p>
+                                <span class="title">{{ main_city.city }}</span>
+                                <br><img src="{% static "images/term.png" %}" style="width:20px;height:20px;"><span class="subtitle">{{ main_city.temperature }}° C</span>
+                                <br><img src="{% static "images/wind.png" %}" style="width:20px;height:20px;"><span class="subtitle"> {{ main_city.wind }} м/c </span>
+                                <br><img src="{% static "images/bar.png" %}" style="width:20px;height:20px;"><span class="subtitle"> {{ main_city.pressure }} мм рт. ст. </span>
+                                <br> {{ main_city.description }}
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+        <div class="column is-offset-0 is-3">
+            <div class="box">
+                <div style="width:484px;overflow:hidden;">
+                    <div style="height:450px;overflow-y:scroll;">
+                        {% for weather in weather_data %}
+                            <div class="box">
+                                <a href="{% url 'City' weather.city %}" style="color: #000 !important;text-decoration: none">
+                                    <article class="media">
+                                        <div class="media-left">
+                                            <figure class="image is-50x50">
+                                                <img src="http://openweathermap.org/img/w/{{ weather.icon }}.png" alt="Image">
+                                            </figure>
+                                        </div>
+                                        <div class="media-content">
+                                            <div class="content">
+                                                <p>
+                                                    <span class="title">{{ weather.city }}</span>
+                                                    <br><img src="{% static "images/term.png" %}" style="width:20px;height:20px;"><span class="subtitle">{{ weather.temperature }}° C</span>
+                                                    <br><img src="{% static "images/wind.png" %}" style="width:20px;height:20px;"><span class="subtitle"> {{ weather.wind }} м/c </span>
+                                                    <br><img src="{% static "images/bar.png" %}" style="width:20px;height:20px;"><span class="subtitle"> {{ weather.pressure }} мм рт. ст. </span>
+                                                    <br> {{ weather.description }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </article>
+                                </a>
+                                <form method="GET">
+                                    {% csrf_token %}
+                                    <div class="control">
+                                        <button class="delete_city button is-error" style="margin-left: 230px" name="Delete" value="{{ weather.city }}">Удалить</button>
+                                    </div>
+                                </form>
+                            </div>
+                        {% endfor %}
+                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
